@@ -10,7 +10,7 @@
 2. Run the following command to install the dependencies:
 
 ```bash
-yarn
+yarn install
 ```
 
 3. Run the following command to start mongodb docker image:
