@@ -17,7 +17,7 @@ import { UserService } from './user/user.service';
     MongooseModule.forRoot(process.env.DATABASE_HOST),
     UserModule,
   ],
-  controllers: [AppController, UserController],
-  providers: [AppService, UserService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

@@ -19,7 +19,7 @@ export class UserController {
     description: 'Something went wrong',
   })
   @ApiBody({ type: CreateUserDto })
-  createUser(@Body() createUser: CreateUserDto): CreateUserDto {
-    return this.userService.createUser(createUser);
+  createUser(@Body() createUserDto: CreateUserDto) {
+    return this.userService.createUser(createUserDto);
   }
 }

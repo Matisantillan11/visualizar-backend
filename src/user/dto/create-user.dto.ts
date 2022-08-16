@@ -21,15 +21,9 @@ export class CreateUserDto {
   })
   public dni: string;
   @ApiProperty()
-  @IsString()
-  @MinLength(1, { message: 'El campo school no puede ser un string vacio.' })
   public school: string;
   @ApiProperty()
-  @IsString()
-  @MinLength(1, { message: 'El campo rol no puede ser un string vacio.' })
   public rol: string;
   @ApiProperty()
-  @IsString()
-  @MinLength(1, { message: 'El campo course no puede ser un string vacio.' })
   public course: string;
 }
