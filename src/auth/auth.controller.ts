@@ -1,14 +1,14 @@
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserService } from './user.service';
+import { AuthService } from './auth.service';
 
-@ApiTags('User')
-@Controller('user')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+@ApiTags('Auth')
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly userService: AuthService) {}
 
-  @Post()
+  @Post('register')
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: 'User created successfully',

@@ -40,6 +40,8 @@ export class User extends Document {
     default: true,
   })
   isActive: boolean;
+  @Prop()
+  public secret: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
