@@ -35,7 +35,7 @@ export class AuthController {
     return this.authService.createUser(createUserDto);
   }
 
-  @Post('Login')
+  @Post('login')
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'User validated successfully',
