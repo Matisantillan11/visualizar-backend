@@ -2,8 +2,11 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
   HttpStatus,
   Post,
+  Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -48,6 +51,24 @@ export class AuthController {
   @ApiBody({ type: CreateUserDto })
   login(@Body() authenticateUserDto: AuthenticateUserDto) {
     return this.authService.login(authenticateUserDto);
+  }
+
+  @Post('request-recovery')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Recovery email sended successfully',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'User email not provided',
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Something went wrong',
+  })
+  @HttpCode(HttpStatus.OK)
+  mailerPasswordRecovery(@Query('userEmail') userEmail: string) {
+    return this.authService.mailerPasswordRecovery(userEmail);
   }
 
   @Post('validate-token')

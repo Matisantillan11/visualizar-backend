@@ -1,4 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -7,6 +13,7 @@ import * as bcrypt from 'bcrypt';
 import { AuthenticateUserDto } from './dto/authenticate-user.dto';
 import { IJWTPayload } from './interface/jwt.interface';
 import { JwtService } from '@nestjs/jwt';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +21,7 @@ export class AuthService {
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailerService,
   ) {}
 
   async createUser(createUserDto: CreateUserDto) {
@@ -51,6 +59,41 @@ export class AuthService {
         user,
         token: this.generateJWT({ id: user._id, email: user.email }),
       };
+    } catch (error) {
+      return error.response;
+    }
+  }
+
+  async mailerPasswordRecovery(userEmail: string) {
+    try {
+      if (userEmail !== undefined && userEmail !== null && userEmail !== '') {
+        const user: User = await this.userModel.findOne({ email: userEmail });
+        if (user) {
+          if (user.isActive) {
+            const mailResponse = await this.mailService.sendMail({
+              to: user?.email,
+              from: process.env.MAIL_ADDRESS_CONFIG,
+              subject: `No Reply <${process.env.MAIL_ADDRESS_CONFIG}>`,
+              text: `Hello ${user.name} ${user.lastname}, we are here to help you to recover your account`,
+            });
+
+            if (mailResponse?.rejected?.length > 0) {
+              throw new InternalServerErrorException(
+                'Cannot send you recovery email',
+              );
+            }
+
+            return {
+              message: `We send you an recovery email to ${user.email} with stricted instructios to reset your password.`,
+            };
+          }
+          throw new NotFoundException(`User with email ${userEmail} not found`);
+        }
+
+        throw new NotFoundException(`User with email ${userEmail} not found`);
+      } else {
+        throw new BadRequestException('User email not provided');
+      }
     } catch (error) {
       return error.response;
     }
