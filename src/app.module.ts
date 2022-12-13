@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { BookModule } from './books/book.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
       },
     }),
     AuthModule,
+    BookModule,
   ],
   controllers: [AppController],
   providers: [AppService],
