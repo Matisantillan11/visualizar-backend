@@ -3,6 +3,7 @@ import {
   createParamDecorator,
   ExecutionContext,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 
 export const Token = createParamDecorator((data, context: ExecutionContext) => {
@@ -15,5 +16,5 @@ export const Token = createParamDecorator((data, context: ExecutionContext) => {
     if (header.includes('Bearer')) return header.substring(7);
   }
 
-  throw new BadRequestException('Token not found.');
+  throw new UnauthorizedException('Token not found.');
 });
