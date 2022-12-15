@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  visualizarapp:
+    depends_on:
+      - db
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: visualizar-docker
+    container_name: visualizarapp
+    restart: always
+    ports:
+      - "${PORT}:${PORT}"
+    # working_dir: /var/www/visualizar
+    environment:
+      MONGODB: ${DATABASE_HOST}
+      PORT: ${PORT}
+      DEFAULT_LIMIT: ${DEFAULT_LIMIT}
+      
+
+  db:
+    image: mongo:5
+    container_name: visualizarcontainer
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGODB_DATABASE: visualizar
+      MONGO_INITDB_ROOT_USERNAME: visualizar 
+      MONGO_INITDB_ROOT_PASSWORD: visualizar
+    # volumes:
+    #   - ./mongo:/data/db
+  redis:
+    image: redis:6.2.6-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
