@@ -13,6 +13,7 @@ import { Book } from './schema/book.schema';
 import { CreateBookDto } from './dto/create-book.dto';
 import { caching } from 'cache-manager';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { handleExceptions } from 'src/handleExceptions';
 @Injectable()
 export class BookService {
   constructor(
@@ -24,15 +25,19 @@ export class BookService {
   async getAllBooks() {
     this.cacheManager = await caching('memory', { max: 100, ttl: 10 * 1000 });
 
-    const cachedBooks = await this.cacheManager.get('books');
-    if (cachedBooks) {
-      return { books: cachedBooks };
+    try {
+      const cachedBooks = await this.cacheManager.get('books');
+      if (cachedBooks) {
+        return { books: cachedBooks };
+      }
+
+      const books = await this.bookModel.find({ isActive: true });
+      await this.cacheManager.set('books', books);
+
+      return { books };
+    } catch (error) {
+      handleExceptions(error.status);
     }
-
-    const books = await this.bookModel.find({ isActive: true });
-    await this.cacheManager.set('books', books);
-
-    return { books };
   }
 
   async getOne(id: string) {
@@ -57,7 +62,7 @@ export class BookService {
     try {
       return await this.bookModel.create(payload);
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      handleExceptions(error.status);
     }
   }
 
@@ -79,8 +84,31 @@ export class BookService {
 
       return await this.bookModel.findOneAndUpdate({ id: book.id }, payload);
     } catch (error) {
-      console.log({ error });
-      throw new InternalServerErrorException(error);
+      handleExceptions(error.status);
+    }
+  }
+
+  async deleteBook(id: string) {
+    if (!id) {
+      throw new BadRequestException();
+    }
+
+    try {
+      const book = await this.getOne(id);
+      if (!book) {
+        throw new NotFoundException();
+      }
+
+      const payload = {
+        isActive: false,
+        updateDate: new Date(),
+      };
+
+      await this.bookModel.findOneAndUpdate({ id: book.id }, payload);
+
+      return { id };
+    } catch (error) {
+      handleExceptions(error.status);
     }
   }
 }

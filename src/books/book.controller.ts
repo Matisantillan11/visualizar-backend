@@ -3,6 +3,7 @@ import {
   Body,
   CacheInterceptor,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -51,5 +52,10 @@ export class BooksController {
     @Body() payload: UpdateBookDto,
   ) {
     return this.bookService.updateBook(id, payload);
+  }
+
+  @Delete(':id/delete')
+  deleteBook(@Token() token: string, @Param('id') id: string) {
+    return this.bookService.deleteBook(id);
   }
 }
